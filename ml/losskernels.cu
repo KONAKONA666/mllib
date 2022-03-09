@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "losskernels.cuh"
 
 
@@ -16,7 +17,7 @@ __global__ void crossentropy_back_kernel(float* y_pred, float* y_gt, float* grad
 
 
 __global__ void crossentropy_kernel(float* y_pred, float* y_gt, float* loss) {
-	__shared__ float entropies[3];
+	__shared__ float entropies[constants::LABELS];
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	int sharedIdx = threadIdx.x;
 	int batchId = blockIdx.x;
@@ -29,7 +30,7 @@ __global__ void crossentropy_kernel(float* y_pred, float* y_gt, float* loss) {
 	__syncthreads();
 	if (sharedIdx == 0) {
 		float sum = 0.0f;
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < constants::LABELS; i++) {
 			sum += entropies[i];
 		}
 		loss[batchId] = sum;
