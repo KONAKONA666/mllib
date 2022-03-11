@@ -12,10 +12,6 @@ struct Param
 	Param(int n, int m) : rows(n), cols(m), data(new Tensor{ n, m }), grad(new Tensor{ n, m }) {
 
 	};
-	~Param() {
-		delete data;
-		delete grad;
-	}
 };
 
 

@@ -61,12 +61,8 @@ Tensor::Tensor(const Tensor& t) {
 
 
 Tensor::~Tensor() {
-	std::cout << "Started Deleted!" << shape[0] << " " << shape[1] << std::endl;
 	delete[] data;
 	cudaFree(d_data);
-	cudnnDestroyTensorDescriptor(desc);
-	
-	std::cout << "Deleted!" << shape[0] << " " << shape[1] << std::endl;
 }
 
 

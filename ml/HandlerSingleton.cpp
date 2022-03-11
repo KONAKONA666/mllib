@@ -11,9 +11,7 @@ HandlerSingleton::HandlerSingleton() {
 }
 
 
-HandlerSingleton::~HandlerSingleton() {
-	std::cout << "DELETE HANDLER";
-}
+HandlerSingleton::~HandlerSingleton() {}
 
 HandlerSingleton& HandlerSingleton::getInstance() {
 	if (instance == nullptr) {

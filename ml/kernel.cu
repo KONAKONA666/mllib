@@ -52,40 +52,36 @@ Tensor* softMaxBack(const Tensor& lossGrad, const Tensor& y, cudnnHandle_t& hand
 
 
 int main() {
-	//Tensor a({ 2, 3 });
+	std::shared_ptr<Tensor> a = std::make_shared<Tensor>(2, 3);
 
-	//a.data[0] = 0.5;
-	//a.data[1] = 0.2;
-	//a.data[2] = 0.1;
-	//a.data[3] = 1;
-	//a.data[4] = 2;
-	//a.data[5] = 1.5;
-
-
-	//a.ToDevice();
-	//const float al = 1;
-	//const float bt = 0;
-	//const float* alpha = &al;
-	//const float* beta = &bt;
-
-	//Tensor l{ 2, 2 };
-	//l.data[0] = 1.0f;
-	//l.data[1] = 0.0f;
-	//l.data[2] = 0.0f;
-	//l.data[3] = 1.0f;
-	//
-	//l.ToDevice();
-	//std::cout << "y_gt: " << std::endl;	
-	//printTensor(l);
-	//std::cout << "X:" << std::endl;
-	//printTensor(a);
+	a->data[0] = 0.5;
+	a->data[1] = 0.2;
+	a->data[2] = 0.1;
+	a->data[3] = 1;
+	a->data[4] = 2;
+	a->data[5] = 1.5;
 
 
-	//Param* m = new Param(10, 10);
-	//delete m;
-	//
-	//std::shared_ptr<Tensor> ptr = std::make_shared<Tensor>(a);
-	//FullyConnectedLayer<BATCH_SIZE> fc1(3, 2);
+	a->ToDevice();
+	const float al = 1;
+	const float bt = 0;
+	const float* alpha = &al;
+	const float* beta = &bt;
+
+	Tensor l{ 2, 2 };
+	l.data[0] = 1.0f;
+	l.data[1] = 0.0f;
+	l.data[2] = 0.0f;
+	l.data[3] = 1.0f;
+	
+	l.ToDevice();
+	std::cout << "y_gt: " << std::endl;	
+	printTensor(l);
+	std::cout << "X:" << std::endl;
+	printTensor(*a);
+
+
+	FullyConnectedLayer<BATCH_SIZE> fc1(3, 2);
 	//auto fc_out = fc1.forward(ptr);
 	//fc_out->ToHost();
 	//printTensor(*fc_out);
@@ -107,8 +103,6 @@ int main() {
 	//std::cout << "fc1 weight grad: " << std::endl;
 	//std::cout << "fc1 Bias grad: " << std::endl;
 	//delete& fc1;
-	Tensor* a = new Tensor(10, 10);
-	std::shared_ptr<Tensor> p = std::make_shared<Tensor>(*a);
 	std::cout << "kek";
 }
 
