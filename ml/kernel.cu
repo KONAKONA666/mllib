@@ -2,7 +2,7 @@
 
 #include <vector>
 
-
+#include "HandlerSingleton.h"
 #include "Tensor.h"
 #include "FullyConnectedLayer.h"
 #include "losskernels.cuh"
@@ -52,65 +52,64 @@ Tensor* softMaxBack(const Tensor& lossGrad, const Tensor& y, cudnnHandle_t& hand
 
 
 int main() {
-	cublasHandle_t handle;
-	cublasCreate(&handle);
-	cudnnHandle_t cudnnHandle;
-	cudnnCreate(&cudnnHandle);
-	Tensor a({ 2, 3 });
-	Tensor b({ 2, 3 });
-	Tensor id({3, 3});
-	Tensor grad({ 2, 3 });
+	//Tensor a({ 2, 3 });
 
-	a.data[0] = 0.5;
-	a.data[1] = 0.2;
-	a.data[2] = 0.1;
-	a.data[3] = 1;
-	a.data[4] = 2;
-	a.data[5] = 1.5;
+	//a.data[0] = 0.5;
+	//a.data[1] = 0.2;
+	//a.data[2] = 0.1;
+	//a.data[3] = 1;
+	//a.data[4] = 2;
+	//a.data[5] = 1.5;
 
 
-	a.ToDevice();
-	b.ToDevice();
-	id.ToDevice();
-	const float al = 1;
-	const float bt = 0;
-	const float* alpha = &al;
-	const float* beta = &bt;
+	//a.ToDevice();
+	//const float al = 1;
+	//const float bt = 0;
+	//const float* alpha = &al;
+	//const float* beta = &bt;
 
-	Tensor l{ 2, 2 };
-	l.data[0] = 1.0f;
-	l.data[1] = 0.0f;
-	l.data[2] = 0.0f;
-	l.data[3] = 1.0f;
-	
-	l.ToDevice();
-	std::cout << "y_gt: " << std::endl;	
-	printTensor(l);
-	std::cout << "X:" << std::endl;
-	printTensor(a);
+	//Tensor l{ 2, 2 };
+	//l.data[0] = 1.0f;
+	//l.data[1] = 0.0f;
+	//l.data[2] = 0.0f;
+	//l.data[3] = 1.0f;
+	//
+	//l.ToDevice();
+	//std::cout << "y_gt: " << std::endl;	
+	//printTensor(l);
+	//std::cout << "X:" << std::endl;
+	//printTensor(a);
 
 
-
-	FullyConnectedLayer<BATCH_SIZE> fc1(3, 2, &handle);
-	Tensor* fc_out = fc1.forward(a);
-	fc_out->ToHost();
-	std::cout << "FC OUT: " << std::endl;
-	printTensor(*fc_out);
-	Tensor* softmaxOut = softmaxForward(*fc_out, cudnnHandle);
-	std::cout << "Softmax: " << std::endl;
-	softmaxOut->ToHost();
-	printTensor(*softmaxOut);
-	float loss = calculate_cross_entropy(*softmaxOut, l);
-	std::cout <<"LOSS: " << loss << std::endl;
-	std::cout << "BACKPROP: " << std::endl;
-	Tensor gradL = *calculate_cross_backwad(*softmaxOut, l);
-	Tensor gradSoft = *softMaxBack(gradL, *softmaxOut, cudnnHandle);
-	gradSoft.ToHost();
-	printTensor(gradSoft);
-	Tensor* fcGrad = fc1.backward(gradSoft);
-	std::cout << "fc1 weight grad: " << std::endl;
-	std::cout << "fc1 Bias grad: " << std::endl;
-	system("pause");
+	//Param* m = new Param(10, 10);
+	//delete m;
+	//
+	//std::shared_ptr<Tensor> ptr = std::make_shared<Tensor>(a);
+	//FullyConnectedLayer<BATCH_SIZE> fc1(3, 2);
+	//auto fc_out = fc1.forward(ptr);
+	//fc_out->ToHost();
+	//printTensor(*fc_out);
+	//fc_out->ToHost();
+	//std::cout << "FC OUT: " << std::endl;
+	//printTensor(*fc_out);
+	//Tensor* softmaxOut = softmaxForward(*fc_out, cudnnHandle);
+	//std::cout << "Softmax: " << std::endl;
+	//softmaxOut->ToHost();
+	//printTensor(*softmaxOut);
+	//float loss = calculate_cross_entropy(*softmaxOut, l);
+	//std::cout <<"LOSS: " << loss << std::endl;
+	//std::cout << "BACKPROP: " << std::endl;
+	//Tensor gradL = *calculate_cross_backwad(*softmaxOut, l);
+	//Tensor gradSoft = *softMaxBack(gradL, *softmaxOut, cudnnHandle);
+	//gradSoft.ToHost();
+	//printTensor(gradSoft);
+	//Tensor* fcGrad = fc1.backward(gradSoft);
+	//std::cout << "fc1 weight grad: " << std::endl;
+	//std::cout << "fc1 Bias grad: " << std::endl;
+	//delete& fc1;
+	Tensor* a = new Tensor(10, 10);
+	std::shared_ptr<Tensor> p = std::make_shared<Tensor>(*a);
+	std::cout << "kek";
 }
 
 

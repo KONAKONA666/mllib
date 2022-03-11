@@ -1,6 +1,7 @@
 #pragma once
 #include "constants.h"
 #include "Tensor.h"
+#include "Layer.h"
 
 struct Param
 {
@@ -8,28 +9,28 @@ struct Param
 	Tensor* grad;
 	int rows;
 	int cols;
-	Param(int n, int m) : rows(n), cols(m) {
-		data = new Tensor{ n, m };
-		grad = new Tensor{ n, m };
+	Param(int n, int m) : rows(n), cols(m), data(new Tensor{ n, m }), grad(new Tensor{ n, m }) {
+
 	};
+	~Param() {
+		delete data;
+		delete grad;
+	}
 };
 
+
 template<int batch_size>
-class FullyConnectedLayer {
+class FullyConnectedLayer: public Layer {
 private:
-	int batch_size = constants::BATCH_SIZE;
+	const int batch_size = constants::BATCH_SIZE;
 	Param weights;
 	Param bias;
-	Tensor d_out;
-	Tensor ones;
-	Tensor* _d_in = nullptr;
-	int inputDim, outputDim;
-	cublasHandle_t* handle;
+	const int inputDim, outputDim;
+	const std::unique_ptr<Tensor> ones;
 public:
-	// (out, batch_size) + 
-	// (out, in)x(in, batch_size) -> (out, batch_size)
-	FullyConnectedLayer(int inDim, int outDim, cublasHandle_t* h);
-	Tensor* forward(Tensor& d_in);
-	Tensor* backward(Tensor& d_gradOut);
+	using T = std::shared_ptr<Tensor>;
+	FullyConnectedLayer(int inDim, int outDim);
+	T forward(const T& in) override;
+	T backward(const T& dOut) override;
 	void print();
 };

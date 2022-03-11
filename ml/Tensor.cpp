@@ -37,12 +37,36 @@ Tensor::Tensor(std::initializer_list<int> s) : shape(s) {
 	checkCUDNN(
 		cudnnSetTensor4dDescriptor(desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w)
 	);
+	std::cout<<"Created!" << shape[0] << " " << shape[1] << std::endl;
+}
+
+
+Tensor::Tensor(const Tensor& t) {
+	nDim = t.nDim;
+	shape = t.shape;
+	std::vector<int> _shape = shape;
+	while (_shape.size() < 4) _shape.push_back(1);
+	int n = _shape[0];
+	int c = _shape[1];
+	int h = _shape[2];
+	int w = _shape[3];
+	_size = n * c * h * w;
+	_memorySize = _size * sizeof(float);
+	allocateMemory();
+	for (int i = 0; i < _size; i++) {
+		data[i] = t.data[i];
+	}
+	cudaMemcpy(d_data, t.d_data, _memorySize, cudaMemcpyDeviceToDevice);
 }
 
 
 Tensor::~Tensor() {
-	cudaFree(d_data);
+	std::cout << "Started Deleted!" << shape[0] << " " << shape[1] << std::endl;
 	delete[] data;
+	cudaFree(d_data);
+	cudnnDestroyTensorDescriptor(desc);
+	
+	std::cout << "Deleted!" << shape[0] << " " << shape[1] << std::endl;
 }
 
 

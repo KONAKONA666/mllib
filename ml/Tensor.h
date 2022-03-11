@@ -15,9 +15,9 @@ public:
 	float* data;
 	float* d_data;
 	int nDim;
-	Tensor() {};
 	Tensor(std::initializer_list<int> s);
-	
+	Tensor(int n, int m): Tensor{ n, m } {};
+	Tensor(const Tensor& t);
 	~Tensor();
 	void allocateMemory();
 	void ToDevice();

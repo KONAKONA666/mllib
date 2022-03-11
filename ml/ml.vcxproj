@@ -88,6 +88,8 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="cuda_headers.cuh" />
     <ClInclude Include="FullyConnectedLayer.h" />
+    <ClInclude Include="HandlerSingleton.h" />
+    <ClInclude Include="Layer.h" />
     <ClInclude Include="losskernels.cuh" />
     <ClInclude Include="readubyte.h" />
     <ClInclude Include="Tensor.h" />
@@ -95,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FullyConnectedLayer.cpp" />
+    <ClCompile Include="HandlerSingleton.cpp" />
     <ClCompile Include="readubyte.cpp" />
     <ClCompile Include="Tensor.cpp" />
   </ItemGroup>

@@ -5,7 +5,7 @@ using namespace constants;
 
 
 void FullyConnectedLayer<BATCH_SIZE>::print() {
-	ones.ToHost();
+	//ones.get().ToHost();
 	bias.data->ToHost();
 	weights.data->ToHost();
 	std::cout << "W: " << std::endl;
@@ -15,35 +15,36 @@ void FullyConnectedLayer<BATCH_SIZE>::print() {
 };
 
 
-Tensor* FullyConnectedLayer<BATCH_SIZE>::backward(Tensor& d_gradOut) {
+std::shared_ptr<Tensor> FullyConnectedLayer<BATCH_SIZE>::backward(const std::shared_ptr<Tensor>& dOut) {
 	float alpha = 1;
 	float beta = 0;
-	weights.grad = _d_in->matrix_mul(d_gradOut, *handle, true, false);
-	Tensor* tmp = d_gradOut.matrix_mul(*weights.data, *handle, false, true);
+	cublasHandle_t* handle = handlers->getCublasHandle();
+	weights.grad = inTensor->matrix_mul(*dOut, *handle, true, false);
+	std::shared_ptr<Tensor> tmp = std::make_shared<Tensor>(*dOut->matrix_mul(*weights.data, *handle, false, true));
 	return tmp;
 }
 
 
-Tensor* FullyConnectedLayer<BATCH_SIZE>::forward(Tensor& d_in) {
+std::shared_ptr<Tensor> FullyConnectedLayer<BATCH_SIZE>::forward(const std::shared_ptr<Tensor>& in)  {
 	float alpha = 1.0f;
 	float beta = 0.0f;
-	_d_in = (Tensor*)&d_in;
-	Tensor* _d_out = d_in.matrix_mul(*weights.data, *handle, false, false);
-	checkCudaErrors(cublasSgemm(*handle, CUBLAS_OP_N, CUBLAS_OP_N, batch_size, outputDim, 1, &alpha, ones.d_data, batch_size, bias.data->d_data, 1, &alpha, _d_out->d_data, batch_size));
-	return _d_out;
+	inTensor = in;
+	cublasHandle_t* handle = handlers->getCublasHandle();
+	outTensor = std::make_shared<Tensor>(*in->matrix_mul(*weights.data, *handle, false, false));
+	checkCudaErrors(cublasSgemm(*handle, CUBLAS_OP_N, CUBLAS_OP_N, batch_size, outputDim, 1, &alpha, ones->d_data, batch_size, bias.data->d_data, 1, &alpha, outTensor->d_data, batch_size));
+	return outTensor;
 };
 
 
-FullyConnectedLayer<BATCH_SIZE>::FullyConnectedLayer(int inDim, int outDim, cublasHandle_t* h)
-	: batch_size(BATCH_SIZE), inputDim(inDim), outputDim(outDim), handle(h),
-	d_out(Tensor{ batch_size, outDim }),
-	weights(Param(inDim, outDim)),
-	ones(Tensor{ batch_size , 1 }),
-	bias(Param(1, outDim))
+
+FullyConnectedLayer<BATCH_SIZE>::FullyConnectedLayer(int inDim, int outDim)
+	:	batch_size(BATCH_SIZE), 
+		ones(new Tensor{batch_size, 1}),
+		inputDim(inDim), outputDim(outDim), 
+		weights(Param(inDim, outDim)),
+		bias(Param(outDim, 1))
 {
-	ones.fillOnes();
-	bias.data->fillOnes();
+	ones->fillOnes();
 	weights.data->fillOnes();
-	d_out.fillZeros();
-	d_out.ToHost();
-};
+	bias.data->fillOnes();
+}
