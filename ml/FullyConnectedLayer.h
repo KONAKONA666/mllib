@@ -5,17 +5,15 @@
 
 struct Param
 {
-	Tensor* data;
-	Tensor* grad;
+	std::unique_ptr<Tensor> data;
+	std::unique_ptr<Tensor> grad;
 	int rows;
 	int cols;
-	Param(int n, int m) : rows(n), cols(m), data(new Tensor{ n, m }), grad(new Tensor{ n, m }) {
-
-	};
+	Param(int n, int m) : rows(n), cols(m), data(new Tensor{ n, m }), grad(new Tensor{ n, m }) {};
 };
 
 
-template<int batch_size>
+
 class FullyConnectedLayer: public Layer {
 private:
 	const int batch_size = constants::BATCH_SIZE;

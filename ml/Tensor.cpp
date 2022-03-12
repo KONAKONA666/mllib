@@ -63,6 +63,7 @@ Tensor::Tensor(const Tensor& t) {
 Tensor::~Tensor() {
 	delete[] data;
 	cudaFree(d_data);
+	cudnnDestroyTensorDescriptor(desc);
 }
 
 
@@ -94,14 +95,21 @@ void Tensor::fillZeros() {
 	GPU_fillZeros(d_data, _size);
 };
 
-
-Tensor* Tensor::matrix_mul(const Tensor& B, const cublasHandle_t& handle, bool transposeA = false, bool transposeB = false) {
-	return tensor_mat_mul(*this, B, handle, transposeA, transposeB);
+template<>
+std::unique_ptr<Tensor> Tensor::matrix_mul(const Tensor& B, const cublasHandle_t& handle, bool transposeA, bool transposeB) {
+	return tensor_mat_mul<std::unique_ptr<Tensor>>(*this, B, handle, transposeA, transposeB);
 }
+
+template<>
+std::shared_ptr<Tensor> Tensor::matrix_mul(const Tensor& B, const cublasHandle_t& handle, bool transposeA, bool transposeB) {
+	return tensor_mat_mul<std::shared_ptr<Tensor>>(*this, B, handle, transposeA, transposeB);
+}
+
 // (2, 3) x (2, 3). (3, 2) x (2, 3) -> (3, 3)
 // (3, 2) x (3, 2). (2, 3) x (3, 2) -> (2, 2)
 // (2, 3) x (3, 2)
-Tensor* tensor_mat_mul(const Tensor& A, const Tensor& B, const cublasHandle_t& handle, bool transposeA = false, bool transposeB = false) {
+template<class PTR>
+PTR tensor_mat_mul(const Tensor& A, const Tensor& B, const cublasHandle_t& handle, bool transposeA = false, bool transposeB = false) {
 	int n = A.shape[0];
 	int m = B.shape[1];
 	int k = A.shape[1];
@@ -113,7 +121,7 @@ Tensor* tensor_mat_mul(const Tensor& A, const Tensor& B, const cublasHandle_t& h
 	if (transposeB) {
 		dimM = k;
 	}
-	Tensor* AB = new Tensor{ dimN, dimM };
+	PTR AB(new Tensor(dimN, dimM));
 	CUBLAS_mat_mul(A.d_data, B.d_data, AB->d_data, n, m, k, handle, transposeA, transposeB);
 	return AB;
 }
@@ -127,4 +135,3 @@ void printTensor(Tensor& t) {
 		std::cout << std::endl;
 	}
 }
-

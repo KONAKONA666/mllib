@@ -4,7 +4,7 @@ using namespace constants;
 
 
 
-void FullyConnectedLayer<BATCH_SIZE>::print() {
+void FullyConnectedLayer::print() {
 	//ones.get().ToHost();
 	bias.data->ToHost();
 	weights.data->ToHost();
@@ -15,29 +15,29 @@ void FullyConnectedLayer<BATCH_SIZE>::print() {
 };
 
 
-std::shared_ptr<Tensor> FullyConnectedLayer<BATCH_SIZE>::backward(const std::shared_ptr<Tensor>& dOut) {
+std::shared_ptr<Tensor> FullyConnectedLayer::backward(const std::shared_ptr<Tensor>& dOut) {
 	float alpha = 1;
 	float beta = 0;
 	cublasHandle_t* handle = handlers->getCublasHandle();
-	weights.grad = inTensor->matrix_mul(*dOut, *handle, true, false);
-	std::shared_ptr<Tensor> tmp = std::make_shared<Tensor>(*dOut->matrix_mul(*weights.data, *handle, false, true));
-	return tmp;
+	weights.grad = std::move(inTensor->matrix_mul<std::unique_ptr<Tensor>>(*dOut, *handle, true, false));
+	std::shared_ptr<Tensor> dNext = dOut->matrix_mul<std::shared_ptr<Tensor>>(*weights.data, *handle, false, true);
+	return dNext;
 }
 
 
-std::shared_ptr<Tensor> FullyConnectedLayer<BATCH_SIZE>::forward(const std::shared_ptr<Tensor>& in)  {
+std::shared_ptr<Tensor> FullyConnectedLayer::forward(const std::shared_ptr<Tensor>& in)  {
 	float alpha = 1.0f;
 	float beta = 0.0f;
 	inTensor = in;
 	cublasHandle_t* handle = handlers->getCublasHandle();
-	outTensor = std::make_shared<Tensor>(*in->matrix_mul(*weights.data, *handle, false, false));
+	outTensor = in->matrix_mul<std::shared_ptr<Tensor>>(*weights.data, *handle, false, false);
 	checkCudaErrors(cublasSgemm(*handle, CUBLAS_OP_N, CUBLAS_OP_N, batch_size, outputDim, 1, &alpha, ones->d_data, batch_size, bias.data->d_data, 1, &alpha, outTensor->d_data, batch_size));
 	return outTensor;
 };
 
 
 
-FullyConnectedLayer<BATCH_SIZE>::FullyConnectedLayer(int inDim, int outDim)
+FullyConnectedLayer::FullyConnectedLayer(int inDim, int outDim)
 	:	batch_size(BATCH_SIZE), 
 		ones(new Tensor{batch_size, 1}),
 		inputDim(inDim), outputDim(outDim), 

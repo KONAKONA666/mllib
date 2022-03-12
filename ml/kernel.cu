@@ -5,6 +5,7 @@
 #include "HandlerSingleton.h"
 #include "Tensor.h"
 #include "FullyConnectedLayer.h"
+#include "SoftMaxLayer.h"
 #include "losskernels.cuh"
 
 using namespace constants;
@@ -81,17 +82,16 @@ int main() {
 	printTensor(*a);
 
 
-	FullyConnectedLayer<BATCH_SIZE> fc1(3, 2);
-	//auto fc_out = fc1.forward(ptr);
-	//fc_out->ToHost();
-	//printTensor(*fc_out);
-	//fc_out->ToHost();
-	//std::cout << "FC OUT: " << std::endl;
-	//printTensor(*fc_out);
-	//Tensor* softmaxOut = softmaxForward(*fc_out, cudnnHandle);
-	//std::cout << "Softmax: " << std::endl;
-	//softmaxOut->ToHost();
-	//printTensor(*softmaxOut);
+	FullyConnectedLayer fc1(3, 2);
+	SoftMaxLayer ac;
+	auto fc_out = fc1.forward(a);
+	auto softmaxOut = ac.forward(fc_out);
+	fc_out->ToHost();
+	std::cout << "FC OUT: " << std::endl;
+	printTensor(*fc_out);
+	std::cout << "Softmax: " << std::endl;
+	softmaxOut->ToHost();
+	printTensor(*softmaxOut);
 	//float loss = calculate_cross_entropy(*softmaxOut, l);
 	//std::cout <<"LOSS: " << loss << std::endl;
 	//std::cout << "BACKPROP: " << std::endl;

@@ -27,12 +27,14 @@ public:
 	void fillZeros();
 	
 	//Tensor* matrix_general_mul(const Tensor& B, const float* alpha, const float* beta, const cublasHandle_t& handle);
-	Tensor* matrix_mul(const Tensor& B, const cublasHandle_t& handle, bool transposeA, bool transposeB);
+	template<class PTR>
+	PTR matrix_mul(const Tensor& B, const cublasHandle_t& handle, bool transposeA = false, bool transposeB = false);
 	//Tensor* matrix_add(const Tensor& B, const cublasHandle_t& handle);
 
 };
 
 
 void CUBLAS_mat_mul(float* A, float* B, float* AB, int n, int m, int k, const cublasHandle_t& handle, bool transposeA, bool transposeB);
-Tensor* tensor_mat_mul(const Tensor& A, const Tensor& B, const cublasHandle_t& handle, bool transposeA, bool transposeB);
+template<class PTR>
+PTR tensor_mat_mul(const Tensor& A, const Tensor& B, const cublasHandle_t& handle, bool transposeA, bool transposeB);
 void printTensor(Tensor& t);
