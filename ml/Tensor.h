@@ -15,6 +15,7 @@ public:
 	float* data;
 	float* d_data;
 	int nDim;
+	Tensor(const std::vector<int>&);
 	Tensor(std::initializer_list<int> s);
 	Tensor(int n, int m): Tensor{ n, m } {};
 	Tensor(const Tensor& t);
@@ -25,6 +26,7 @@ public:
 	void random_init(curandGenerator_t& rng);
 	void fillOnes();
 	void fillZeros();
+	std::shared_ptr<Tensor> create_like() const;
 	
 	//Tensor* matrix_general_mul(const Tensor& B, const float* alpha, const float* beta, const cublasHandle_t& handle);
 	template<class PTR>

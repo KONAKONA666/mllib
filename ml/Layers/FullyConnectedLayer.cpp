@@ -19,7 +19,7 @@ std::shared_ptr<Tensor> FullyConnectedLayer::backward(const std::shared_ptr<Tens
 	float alpha = 1;
 	float beta = 0;
 	cublasHandle_t* handle = handlers->getCublasHandle();
-	weights.grad = std::move(inTensor->matrix_mul<std::unique_ptr<Tensor>>(*dOut, *handle, true, false));
+	weights.grad = inTensor->matrix_mul<std::unique_ptr<Tensor>>(*dOut, *handle, true, false);
 	std::shared_ptr<Tensor> dNext = dOut->matrix_mul<std::shared_ptr<Tensor>>(*weights.data, *handle, false, true);
 	return dNext;
 }

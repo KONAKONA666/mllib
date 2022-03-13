@@ -94,6 +94,7 @@
     <ClInclude Include="Loss\losskernels.cuh" />
     <ClInclude Include="readubyte.h" />
     <ClInclude Include="Layers\SoftMaxLayer.h" />
+    <ClInclude Include="Layers\ReluLayer.h" />
     <ClInclude Include="Tensor.h" />
     <ClInclude Include="tensorkernels.cuh" />
   </ItemGroup>
@@ -103,6 +104,7 @@
     <ClCompile Include="HandlerSingleton.cpp" />
     <ClCompile Include="readubyte.cpp" />
     <ClCompile Include="Layers\SoftMaxLayer.cpp" />
+    <ClCompile Include="Layers\ReluLayer.cpp" />
     <ClCompile Include="Tensor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

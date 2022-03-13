@@ -6,6 +6,7 @@
 #include "Tensor.h"
 #include "Layers/FullyConnectedLayer.h"
 #include "Layers/SoftMaxLayer.h"
+#include "Layers/ReluLayer.h"
 #include "Loss/CrossEntropyLoss.h"
 
 int main() {
@@ -39,15 +40,26 @@ int main() {
 
 
 	FullyConnectedLayer fc1(3, 2);
+	FullyConnectedLayer fc2(2, 2);
 	SoftMaxLayer ac;
 	CrossEntropyLoss ceLoss = CrossEntropyLoss(false);
-	
+	ReluLayer relu = ReluLayer();
+
+
 	auto fc_out = fc1.forward(a);
-	auto softmaxOut = ac.forward(fc_out);
+	auto relu_out = relu.forward(fc_out);
 	fc_out->ToHost();
 	std::cout << "FC OUT: " << std::endl;
 	printTensor(*fc_out);
+	std::cout << "Relu OUT: " << std::endl;
+	relu_out->ToHost();
+	printTensor(*relu_out);
+	auto fc2_out = fc2.forward(relu_out);
+	fc2_out->ToHost();
+	std::cout << "FC OUT: " << std::endl;
+	printTensor(*fc2_out);
 	std::cout << "Softmax: " << std::endl;
+	auto softmaxOut = ac.forward(fc2_out);
 	softmaxOut->ToHost();
 	printTensor(*softmaxOut);
 	float loss = ceLoss.forward(softmaxOut, l);
@@ -59,9 +71,16 @@ int main() {
 	printTensor(*gradL);
 	std::shared_ptr<Tensor> gradSoft = ac.backward(gradL);
 	gradSoft->ToHost();
+	std::cout << "dSoft\n";
 	printTensor(*gradSoft);
-	std::shared_ptr<Tensor> fcGrad = fc1.backward(gradSoft);
-
+	auto fc2Grad = fc2.backward(gradSoft);
+	std::cout << "dfc2\n";
+	fc2Grad->ToHost();
+	printTensor(*fc2Grad);
+	auto reluGrad = relu.backward(fc2Grad);
+	reluGrad->ToHost();
+	std::cout << "dRelu\n";
+	printTensor(*reluGrad);
 	//std::cout << "fc1 weight grad: " << std::endl;
 	//std::cout << "fc1 Bias grad: " << std::endl;
 	//delete& fc1;

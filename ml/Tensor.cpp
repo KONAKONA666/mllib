@@ -19,8 +19,25 @@ void CUBLAS_mat_mul(float* A, float* B, float* AB, int n, int m, int k, const cu
 	}
 
 	cublasSgemm(handle, opB, opA, c_n, c_m, c_k, &alpha, B, m, A, k, &beta, AB, m);
-}
+};
 
+
+Tensor::Tensor(const std::vector<int>& s): shape(s) {
+	nDim = (int)shape.size();
+	std::vector<int> _shape = shape;
+	while (_shape.size() < 4) _shape.push_back(1);
+	int n = _shape[0];
+	int c = _shape[1];
+	int h = _shape[2];
+	int w = _shape[3];
+	_size = n * c * h * w;
+	_memorySize = _size * sizeof(float);
+	allocateMemory();
+	checkCUDNN(cudnnCreateTensorDescriptor(&desc));
+	checkCUDNN(
+		cudnnSetTensor4dDescriptor(desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w)
+	);
+}
 
 Tensor::Tensor(std::initializer_list<int> s) : shape(s) {
 	nDim = (int)shape.size();
@@ -37,7 +54,7 @@ Tensor::Tensor(std::initializer_list<int> s) : shape(s) {
 	checkCUDNN(
 		cudnnSetTensor4dDescriptor(desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w)
 	);
-}
+};
 
 
 Tensor::Tensor(const Tensor& t) {
@@ -60,30 +77,30 @@ Tensor::Tensor(const Tensor& t) {
 		data[i] = t.data[i];
 	}
 	cudaMemcpy(d_data, t.d_data, _memorySize, cudaMemcpyDeviceToDevice);
-}
+};
 
 
 Tensor::~Tensor() {
 	delete[] data;
 	cudaFree(d_data);
 	cudnnDestroyTensorDescriptor(desc);
-}
+};
 
 
 void Tensor::allocateMemory() {
 	data = new float[_memorySize];
 	checkCudaErrors(cudaMalloc(&d_data, _memorySize));
-}
+};
 
 
 void Tensor::ToDevice() {
 	checkCudaErrors(cudaMemcpy(d_data, data, _memorySize, cudaMemcpyHostToDevice));
-}
+};
 
 
 void Tensor::ToHost() {
 	checkCudaErrors(cudaMemcpy(data, d_data, _memorySize, cudaMemcpyDeviceToHost));
-}
+};
 
 void Tensor::random_init(curandGenerator_t& rng) {
 	curandGenerateUniform(rng, d_data, _size);
@@ -97,6 +114,11 @@ void Tensor::fillOnes() {
 void Tensor::fillZeros() {
 	GPU_fillZeros(d_data, _size);
 };
+
+
+std::shared_ptr<Tensor> Tensor::create_like() const {
+	return std::shared_ptr<Tensor>(new Tensor(shape));
+}
 
 template<>
 std::unique_ptr<Tensor> Tensor::matrix_mul(const Tensor& B, const cublasHandle_t& handle, bool transposeA, bool transposeB) {
