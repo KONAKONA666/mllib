@@ -81,28 +81,28 @@
   <ItemGroup>
     <CudaCompile Include="File.cu" />
     <CudaCompile Include="kernel.cu" />
-    <CudaCompile Include="losskernels.cu" />
+    <CudaCompile Include="Loss\losskernels.cu" />
     <CudaCompile Include="tensorkernels.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h" />
-    <ClInclude Include="CrossEntropyLoss.h" />
+    <ClInclude Include="Loss\CrossEntropyLoss.h" />
     <ClInclude Include="cuda_headers.cuh" />
-    <ClInclude Include="FullyConnectedLayer.h" />
+    <ClInclude Include="Layers\FullyConnectedLayer.h" />
     <ClInclude Include="HandlerSingleton.h" />
-    <ClInclude Include="Layer.h" />
-    <ClInclude Include="losskernels.cuh" />
+    <ClInclude Include="Layers\Layer.h" />
+    <ClInclude Include="Loss\losskernels.cuh" />
     <ClInclude Include="readubyte.h" />
-    <ClInclude Include="SoftMaxLayer.h" />
+    <ClInclude Include="Layers\SoftMaxLayer.h" />
     <ClInclude Include="Tensor.h" />
     <ClInclude Include="tensorkernels.cuh" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CrossEntropyLoss.cpp" />
-    <ClCompile Include="FullyConnectedLayer.cpp" />
+    <ClCompile Include="Loss\CrossEntropyLoss.cpp" />
+    <ClCompile Include="Layers\FullyConnectedLayer.cpp" />
     <ClCompile Include="HandlerSingleton.cpp" />
     <ClCompile Include="readubyte.cpp" />
-    <ClCompile Include="SoftMaxLayer.cpp" />
+    <ClCompile Include="Layers\SoftMaxLayer.cpp" />
     <ClCompile Include="Tensor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

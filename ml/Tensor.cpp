@@ -37,7 +37,6 @@ Tensor::Tensor(std::initializer_list<int> s) : shape(s) {
 	checkCUDNN(
 		cudnnSetTensor4dDescriptor(desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w)
 	);
-	std::cout<<"Created!" << shape[0] << " " << shape[1] << std::endl;
 }
 
 

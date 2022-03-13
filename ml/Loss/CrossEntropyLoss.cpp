@@ -1,6 +1,9 @@
 #include "CrossEntropyLoss.h"
 #include "losskernels.cuh"
 
+
+CrossEntropyLoss::CrossEntropyLoss(bool reduce_mean = false): reduction_mean(reduce_mean) {};
+
 float CrossEntropyLoss::forward(const std::shared_ptr<Tensor> in, const std::shared_ptr<Tensor> y) {
 	inTensor = in;
 	y_gt = y;
@@ -13,7 +16,7 @@ float CrossEntropyLoss::forward(const std::shared_ptr<Tensor> in, const std::sha
 	for (int i = 0; i < m; i++) {
 		loss += tmp->data[i];
 	}
-	if (reduction == SUM) {
+	if (!reduction_mean) {
 		return loss;
 	}
 	else {

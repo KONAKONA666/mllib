@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include "Tensor.h"
-#include "HandlerSingleton.h"
+#include "../Tensor.h"
+#include "../HandlerSingleton.h"
 
 
 class Layer

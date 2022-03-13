@@ -4,53 +4,9 @@
 
 #include "HandlerSingleton.h"
 #include "Tensor.h"
-#include "FullyConnectedLayer.h"
-#include "SoftMaxLayer.h"
-#include "losskernels.cuh"
-
-using namespace constants;
-
-
-float calculate_cross_entropy(const Tensor& preds, const Tensor& y) {
-	Tensor loss{ preds.shape[0], preds.shape[1] };
-	loss.fillZeros();
-	GPU_crossentropy_kernel(preds.d_data, y.d_data, loss.d_data, LABELS, BATCH_SIZE);
-	loss.ToHost();
-	float ans = 0;
-	for (int i = 0; i < BATCH_SIZE; i++) {
-		ans += loss.data[i];
-	}
-	return ans;
-}
-
-Tensor* calculate_cross_backwad(const Tensor& y_pred, const Tensor& y_gt) {
-	Tensor* tmp = new Tensor{BATCH_SIZE, LABELS};
-	GPU_crossentropy_back_kernel(y_pred.d_data, y_gt.d_data, tmp->d_data, LABELS, BATCH_SIZE);
-	return tmp;
-}
-
-
-Tensor* softmaxForward(const Tensor& in, cudnnHandle_t& handle) {
-	const float alpha = 1.0f;
-	const float beta = 0.0;
-	Tensor* tmp = new Tensor{BATCH_SIZE, LABELS};
-	checkCUDNN(
-		cudnnSoftmaxForward(handle, CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_INSTANCE, &alpha, in.desc, in.d_data, &beta, tmp->desc, tmp->d_data)
-	);
-	return tmp;
-}
-
-
-Tensor* softMaxBack(const Tensor& lossGrad, const Tensor& y, cudnnHandle_t& handle) {
-	const float alpha = 1.0f;
-	const float beta = 0.0;
-	Tensor* tmp = new Tensor{ BATCH_SIZE, LABELS };
-	checkCUDNN(
-		cudnnSoftmaxBackward(handle, CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_CHANNEL, &alpha, y.desc, y.d_data, lossGrad.desc, lossGrad.d_data, &beta, tmp->desc, tmp->d_data)
-	);
-	return tmp;
-}
-
+#include "Layers/FullyConnectedLayer.h"
+#include "Layers/SoftMaxLayer.h"
+#include "Loss/CrossEntropyLoss.h"
 
 int main() {
 	std::shared_ptr<Tensor> a = std::make_shared<Tensor>(2, 3);
@@ -69,21 +25,23 @@ int main() {
 	const float* alpha = &al;
 	const float* beta = &bt;
 
-	Tensor l{ 2, 2 };
-	l.data[0] = 1.0f;
-	l.data[1] = 0.0f;
-	l.data[2] = 0.0f;
-	l.data[3] = 1.0f;
+	std::shared_ptr<Tensor> l = std::make_shared<Tensor>( 2, 2 );
+	l->data[0] = 1.0f;
+	l->data[1] = 0.0f;
+	l->data[2] = 0.0f;
+	l->data[3] = 1.0f;
 	
-	l.ToDevice();
+	l->ToDevice();
 	std::cout << "y_gt: " << std::endl;	
-	printTensor(l);
+	printTensor(*l);
 	std::cout << "X:" << std::endl;
 	printTensor(*a);
 
 
 	FullyConnectedLayer fc1(3, 2);
 	SoftMaxLayer ac;
+	CrossEntropyLoss ceLoss = CrossEntropyLoss(false);
+	
 	auto fc_out = fc1.forward(a);
 	auto softmaxOut = ac.forward(fc_out);
 	fc_out->ToHost();
@@ -92,18 +50,22 @@ int main() {
 	std::cout << "Softmax: " << std::endl;
 	softmaxOut->ToHost();
 	printTensor(*softmaxOut);
-	//float loss = calculate_cross_entropy(*softmaxOut, l);
-	//std::cout <<"LOSS: " << loss << std::endl;
-	//std::cout << "BACKPROP: " << std::endl;
-	//Tensor gradL = *calculate_cross_backwad(*softmaxOut, l);
-	//Tensor gradSoft = *softMaxBack(gradL, *softmaxOut, cudnnHandle);
-	//gradSoft.ToHost();
-	//printTensor(gradSoft);
-	//Tensor* fcGrad = fc1.backward(gradSoft);
+	float loss = ceLoss.forward(softmaxOut, l);
+	std::cout <<"LOSS: " << loss << std::endl;
+	std::cout << "BACKPROP: " << std::endl;
+	std::shared_ptr<Tensor> gradL = ceLoss.backward();
+	std::cout << "dL\n";
+	gradL->ToHost();
+	printTensor(*gradL);
+	std::shared_ptr<Tensor> gradSoft = ac.backward(gradL);
+	gradSoft->ToHost();
+	printTensor(*gradSoft);
+	std::shared_ptr<Tensor> fcGrad = fc1.backward(gradSoft);
+
 	//std::cout << "fc1 weight grad: " << std::endl;
 	//std::cout << "fc1 Bias grad: " << std::endl;
 	//delete& fc1;
-	std::cout << "kek";
+	//std::cout << "kek";
 }
 
 

@@ -1,4 +1,4 @@
-#include "cuda_headers.cuh"
+#include "../cuda_headers.cuh"
 
 //// (bs, l) -> R
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "constants.h"
+#include "../constants.h"
 #include "Layer.h"
 
 class SoftMaxLayer: public Layer

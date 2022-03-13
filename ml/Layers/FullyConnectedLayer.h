@@ -1,6 +1,6 @@
 #pragma once
-#include "constants.h"
-#include "Tensor.h"
+#include "../constants.h"
+#include "../Tensor.h"
 #include "Layer.h"
 
 struct Param
