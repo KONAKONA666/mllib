@@ -153,10 +153,14 @@ PTR tensor_mat_mul(const Tensor& A, const Tensor& B, const cublasHandle_t& handl
 
 
 void printTensor(Tensor& t) {
+	std::cout << "[";
 	for (int i = 0; i < t.shape[0]; i++) {
+		std::cout << "[";
 		for (int j = 0; j < t.shape[1]; j++) {
-			std::cout << t.data[i * t.shape[1] + j] << " ";
+			std::cout << t.data[i * t.shape[1] + j] << ",";
 		}
-		std::cout << std::endl;
+		std::cout << "],";
 	}
+	std::cout << "]";
+	std::cout << std::endl;
 }

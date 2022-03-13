@@ -8,11 +8,15 @@ void FullyConnectedLayer::print() {
 	//ones.get().ToHost();
 	bias.data->ToHost();
 	weights.data->ToHost();
+	weights.grad->ToHost();
 	std::cout << "W: " << std::endl;
 	printTensor(*weights.data);
 	std::cout << "B: " << std::endl;
 	printTensor(*bias.data);
+	std::cout << "dW: " << std::endl;
+	printTensor(*weights.grad);
 };
+
 
 
 std::shared_ptr<Tensor> FullyConnectedLayer::backward(const std::shared_ptr<Tensor>& dOut) {
@@ -45,6 +49,6 @@ FullyConnectedLayer::FullyConnectedLayer(int inDim, int outDim)
 		bias(Param(outDim, 1))
 {
 	ones->fillOnes();
-	weights.data->fillOnes();
-	bias.data->fillOnes();
+	weights.data->random_init(*handlers->getCurandGenerator());
+	bias.data->random_init(*handlers->getCurandGenerator());
 }

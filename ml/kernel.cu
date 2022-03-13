@@ -45,7 +45,6 @@ int main() {
 	CrossEntropyLoss ceLoss = CrossEntropyLoss(false);
 	ReluLayer relu = ReluLayer();
 
-
 	auto fc_out = fc1.forward(a);
 	auto relu_out = relu.forward(fc_out);
 	fc_out->ToHost();
@@ -81,10 +80,15 @@ int main() {
 	reluGrad->ToHost();
 	std::cout << "dRelu\n";
 	printTensor(*reluGrad);
+	auto t = fc1.backward(reluGrad);
 	//std::cout << "fc1 weight grad: " << std::endl;
 	//std::cout << "fc1 Bias grad: " << std::endl;
 	//delete& fc1;
 	//std::cout << "kek";
+	std::cout << "FC1:\n";
+	fc1.print();
+	std::cout << "FC2:\n";
+	fc2.print();
 }
 
 
