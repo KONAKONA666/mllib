@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h" />
+    <ClInclude Include="CrossEntropyLoss.h" />
     <ClInclude Include="cuda_headers.cuh" />
     <ClInclude Include="FullyConnectedLayer.h" />
     <ClInclude Include="HandlerSingleton.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="tensorkernels.cuh" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CrossEntropyLoss.cpp" />
     <ClCompile Include="FullyConnectedLayer.cpp" />
     <ClCompile Include="HandlerSingleton.cpp" />
     <ClCompile Include="readubyte.cpp" />

@@ -13,6 +13,6 @@ protected:
 	T outTensor;
 public:
 	Layer() : handlers(&HandlerSingleton::getInstance()) {};
-	virtual T forward(const T&) = 0;
+	virtual T forward(const T) = 0;
 	virtual T backward(const T&) = 0;
 };

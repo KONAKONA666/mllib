@@ -25,7 +25,7 @@ std::shared_ptr<Tensor> FullyConnectedLayer::backward(const std::shared_ptr<Tens
 }
 
 
-std::shared_ptr<Tensor> FullyConnectedLayer::forward(const std::shared_ptr<Tensor>& in)  {
+std::shared_ptr<Tensor> FullyConnectedLayer::forward(const std::shared_ptr<Tensor> in)  {
 	float alpha = 1.0f;
 	float beta = 0.0f;
 	inTensor = in;

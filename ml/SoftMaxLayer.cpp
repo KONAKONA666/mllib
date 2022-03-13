@@ -2,7 +2,7 @@
 #include "SoftMaxLayer.h"
 
 
-std::shared_ptr<Tensor> SoftMaxLayer::forward(const std::shared_ptr<Tensor>& in) {
+std::shared_ptr<Tensor> SoftMaxLayer::forward(const std::shared_ptr<Tensor> in) {
 	const float alpha = 1.0f;
 	const float beta = 0.0;
 	int m = in->shape[0];

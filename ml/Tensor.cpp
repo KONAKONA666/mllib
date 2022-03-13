@@ -53,6 +53,10 @@ Tensor::Tensor(const Tensor& t) {
 	_size = n * c * h * w;
 	_memorySize = _size * sizeof(float);
 	allocateMemory();
+	checkCUDNN(cudnnCreateTensorDescriptor(&desc));
+	checkCUDNN(
+		cudnnSetTensor4dDescriptor(desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w)
+	);
 	for (int i = 0; i < _size; i++) {
 		data[i] = t.data[i];
 	}
