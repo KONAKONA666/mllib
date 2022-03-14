@@ -16,8 +16,7 @@ private:
 	int inChannels, outChannels;
 	int kernelSize;
 
-	std::unique_ptr<FilterParam> weights;
-	std::unique_ptr<Param> bias;
+
 
 	int forwardH, forwardW;
 
@@ -28,6 +27,8 @@ private:
 	void getWorkspaceSize(size_t&);
 
 public:
+	FilterParam weights;
+	Param bias;
 //	Conv2d(int inC, int outC, int kernel, int pH = 0, int pW = 0, int sH = 1, int sW = 1, int dH = 1, int dV = 1);
 	Conv2d(int, int, int);
 	~Conv2d();

@@ -41,13 +41,12 @@ std::shared_ptr<Tensor> FullyConnectedLayer::forward(const std::shared_ptr<Tenso
 }
 
 
-
 FullyConnectedLayer::FullyConnectedLayer(int inDim, int outDim)
 	:	batch_size(BATCH_SIZE), 
 		ones(new Tensor{batch_size, 1}),
 		inputDim(inDim), outputDim(outDim), 
-		weights(Param(inDim, outDim)),
-		bias(Param(outDim, 1))
+		weights(inDim, outDim),
+		bias(outDim, 1)
 {
 	ones->fillOnes();
 	weights.data->random_init(*handlers->getCurandGenerator());

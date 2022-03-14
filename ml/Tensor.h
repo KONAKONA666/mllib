@@ -29,10 +29,16 @@ public:
 	void squeeze();
 	std::shared_ptr<Tensor> create_like() const;
 	
+	int getSize() const {
+		return _size;
+	}
+
 	//Tensor* matrix_general_mul(const Tensor& B, const float* alpha, const float* beta, const cublasHandle_t& handle);
 	template<class PTR>
 	PTR matrix_mul(const Tensor& B, const cublasHandle_t& handle, bool transposeA = false, bool transposeB = false);
 	//Tensor* matrix_add(const Tensor& B, const cublasHandle_t& handle);
+
+
 
 };
 
