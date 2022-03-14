@@ -73,6 +73,7 @@ Tensor::Tensor(const Tensor& t) {
 	checkCUDNN(
 		cudnnSetTensor4dDescriptor(desc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w)
 	);
+	cudaMemcpy(d_data, t.d_data, _memorySize, cudaMemcpyDeviceToDevice);
 	for (int i = 0; i < _size; i++) {
 		data[i] = t.data[i];
 	}
@@ -153,14 +154,18 @@ PTR tensor_mat_mul(const Tensor& A, const Tensor& B, const cublasHandle_t& handl
 
 
 void printTensor(Tensor& t) {
-	std::cout << "[";
 	for (int i = 0; i < t.shape[0]; i++) {
-		std::cout << "[";
 		for (int j = 0; j < t.shape[1]; j++) {
-			std::cout << t.data[i * t.shape[1] + j] << ",";
+			for (int k = 0; k < t.shape[2]; k++) {
+				for (int p = 0; p < t.shape[3]; p++) {
+					
+					std::cout << t.data[t.shape[1] * t.shape[2] * t.shape[3] * i + t.shape[2] * t.shape[3] * j + t.shape[3] * k + p] << " ";
+				}
+				std::cout<<std::endl;
+			}
+			std::cout << std::endl;
 		}
-		std::cout << "],";
+		std::cout << std::endl;
 	}
-	std::cout << "]";
 	std::cout << std::endl;
 }

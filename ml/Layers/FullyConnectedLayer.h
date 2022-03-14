@@ -3,14 +3,6 @@
 #include "../Tensor.h"
 #include "Layer.h"
 
-struct Param
-{
-	std::unique_ptr<Tensor> data;
-	std::unique_ptr<Tensor> grad;
-	int rows;
-	int cols;
-	Param(int n, int m) : rows(n), cols(m), data(new Tensor{ n, m }), grad(new Tensor{ n, m }) {};
-};
 
 
 
