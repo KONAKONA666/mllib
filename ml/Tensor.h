@@ -26,6 +26,7 @@ public:
 	void random_init(curandGenerator_t& rng);
 	void fillOnes();
 	void fillZeros();
+	void squeeze();
 	std::shared_ptr<Tensor> create_like() const;
 	
 	//Tensor* matrix_general_mul(const Tensor& B, const float* alpha, const float* beta, const cublasHandle_t& handle);
@@ -40,3 +41,5 @@ void CUBLAS_mat_mul(float* A, float* B, float* AB, int n, int m, int k, const cu
 template<class PTR>
 PTR tensor_mat_mul(const Tensor& A, const Tensor& B, const cublasHandle_t& handle, bool transposeA, bool transposeB);
 void printTensor(Tensor& t);
+void printTensor2d( Tensor& t);
+void printShape(const Tensor& t);

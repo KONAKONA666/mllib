@@ -30,6 +30,7 @@ private:
 public:
 //	Conv2d(int inC, int outC, int kernel, int pH = 0, int pW = 0, int sH = 1, int sW = 1, int dH = 1, int dV = 1);
 	Conv2d(int, int, int);
+	~Conv2d();
 	std::shared_ptr<Tensor> forward(const std::shared_ptr<Tensor> in) override;
 	std::shared_ptr<Tensor> backward(const std::shared_ptr<Tensor>& dOut) override;
 };

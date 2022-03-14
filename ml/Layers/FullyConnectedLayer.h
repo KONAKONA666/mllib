@@ -14,9 +14,8 @@ private:
 	const int inputDim, outputDim;
 	const std::unique_ptr<Tensor> ones;
 public:
-	using T = std::shared_ptr<Tensor>;
 	FullyConnectedLayer(int inDim, int outDim);
-	T forward(const T in) override;
-	T backward(const T& dOut) override;
+	std::shared_ptr<Tensor> forward(const  std::shared_ptr<Tensor> in) override;
+	std::shared_ptr<Tensor> backward(const  std::shared_ptr<Tensor>& dOut) override;
 	void print();
 };

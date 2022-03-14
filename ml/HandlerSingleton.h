@@ -22,6 +22,11 @@ public:
 	curandGenerator_t* getCurandGenerator() const {
 		return &curandHandler;
 	};
+	void destroyHandlers() {
+		cublasDestroy(cublasHandler);
+		cudnnDestroy(cudnnHandler);
+		curandDestroyGenerator(curandHandler);
+	}
 	static HandlerSingleton& getInstance();
 	~HandlerSingleton();
 };

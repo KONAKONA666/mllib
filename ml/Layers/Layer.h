@@ -24,6 +24,7 @@ struct FilterParam {
 		cudnnCreateFilterDescriptor(&desc);
 		cudnnSetFilter4dDescriptor(desc, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, outChannels, inChannels, kernelSize, kernelSize);
 		data = std::make_unique<Tensor>(std::initializer_list<int>{inC, outC, kernel, kernel});
+		grad = std::make_unique<Tensor>(std::initializer_list<int>{inC, outC, kernel, kernel});
 	};
 	~FilterParam() {
 		cudnnDestroyFilterDescriptor(desc);
@@ -40,7 +41,7 @@ protected:
 	T outTensor;
 public:
 	Layer() : handlers(&HandlerSingleton::getInstance()) {};
-	//virtual ~Layer() {};
+	virtual ~Layer() {};
 	virtual T forward(const T) = 0;
 	virtual T backward(const T&) = 0;
 };
