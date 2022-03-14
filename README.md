@@ -132,3 +132,12 @@ int main() {
 ```
 
 Avoid using raw pointers
+
+## TO DO
+- Add grad rules for params. for exmaple when ParamA + ParamB => dataA + dataB and gradA + gradB.
+- Add autograd
+- Add more layers
+- refactor
+- Add CPU processing
+- Add Dataloaders
+- Add model class
