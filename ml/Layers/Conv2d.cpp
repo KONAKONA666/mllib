@@ -40,7 +40,6 @@ std::shared_ptr<Tensor> Conv2d::forward(const std::shared_ptr<Tensor> in) {
 	int n, c, h, w;
 	getOutputDims(inTensor, n, c, h, w);
 	outTensor = std::make_shared<Tensor>(std::initializer_list<int>{ n, c, h, w });
-	printf("n: %d, c: %d, h: %d, w: %d\n", n, c, h, w);
 	if (d_workspace == nullptr) {
 		getWorkspaceSize(workspaceSize);
 		cudaMalloc(&d_workspace, workspaceSize);
@@ -82,4 +81,5 @@ std::shared_ptr<Tensor> Conv2d::backward(const std::shared_ptr<Tensor>& dOut) {
 
 Conv2d::~Conv2d() {
 	cudaFree(d_workspace);
+	cudnnDestroyConvolutionDescriptor(desc);
 }
