@@ -9,5 +9,4 @@ namespace constants {
 	constexpr int TRAIN_SIZE = 50000;
 	constexpr int TEST_SIZE = 10000;
 	constexpr float learningRate = 0.001f;
-
 }

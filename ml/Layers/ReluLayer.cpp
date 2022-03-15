@@ -11,7 +11,8 @@ ReluLayer::~ReluLayer() {
 
 std::shared_ptr<Tensor> ReluLayer::forward(const std::shared_ptr<Tensor> in) {
 	inTensor = in;
-	outTensor = in->create_like();
+	if (outTensor == nullptr)
+		outTensor = in->create_like();
 	float alpha = 1;
 	float beta = 0;
 	cudnnHandle_t* handle = handlers->getCudnnHandle();
@@ -24,7 +25,8 @@ std::shared_ptr<Tensor> ReluLayer::backward(const std::shared_ptr<Tensor>& dOut)
 	float alpha = 1;
 	float beta = 0;
 	cudnnHandle_t* handle = handlers->getCudnnHandle();
-	std::shared_ptr<Tensor> dIn = std::make_shared<Tensor>(inTensor->shape);
-	cudnnActivationBackward(*handle, desc, &alpha, outTensor->desc, outTensor->d_data, dOut->desc, dOut->d_data, inTensor->desc, inTensor->d_data, &beta, dIn->desc, dIn->d_data);
-	return dIn;
+	if(dNext == nullptr)
+		dNext = std::make_shared<Tensor>(inTensor->shape);
+	cudnnActivationBackward(*handle, desc, &alpha, outTensor->desc, outTensor->d_data, dOut->desc, dOut->d_data, inTensor->desc, inTensor->d_data, &beta, dNext->desc, dNext->d_data);
+	return dNext;
 }

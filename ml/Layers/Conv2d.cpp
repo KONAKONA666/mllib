@@ -38,7 +38,8 @@ std::shared_ptr<Tensor> Conv2d::forward(const std::shared_ptr<Tensor> in) {
 	cudnnHandle_t* handle = handlers->getCudnnHandle();
 	int n, c, h, w;
 	getOutputDims(inTensor, n, c, h, w);
-	outTensor = std::make_shared<Tensor>(std::initializer_list<int>{ n, c, h, w });
+	if(outTensor == nullptr)
+		outTensor = std::make_shared<Tensor>(std::initializer_list<int>{ n, c, h, w });
 	if (d_workspace == nullptr) {
 		getWorkspaceSize(workspaceSize);
 		cudaMalloc(&d_workspace, workspaceSize);
@@ -63,7 +64,8 @@ std::shared_ptr<Tensor> Conv2d::backward(const std::shared_ptr<Tensor>& dOut) {
 		cudaMalloc(&d_workspace, workspaceSize);
 	}
 
-	std::shared_ptr<Tensor> tmp = inTensor->create_like();
+	if(dNext == nullptr)
+		dNext= inTensor->create_like();
 	
 	checkCUDNN(
 		cudnnConvolutionBackwardBias(*handle, &alpha, outTensor->desc, dOut->d_data, &beta, bias.grad->desc, bias.grad->d_data)
@@ -72,9 +74,9 @@ std::shared_ptr<Tensor> Conv2d::backward(const std::shared_ptr<Tensor>& dOut) {
 		cudnnConvolutionBackwardFilter(*handle, &alpha, inTensor->desc, inTensor->d_data, outTensor->desc, dOut->d_data, desc, CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT, d_workspace, workspaceSize, &beta, weights.desc, weights.grad->d_data)
 	);
 	checkCUDNN(
-		cudnnConvolutionBackwardData(*handle, &alpha, weights.desc, weights.data->d_data, outTensor->desc, dOut->d_data, desc, CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT, d_workspace, workspaceSize, &beta, tmp->desc, tmp->d_data)
+		cudnnConvolutionBackwardData(*handle, &alpha, weights.desc, weights.data->d_data, outTensor->desc, dOut->d_data, desc, CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT, d_workspace, workspaceSize, &beta, dNext->desc, dNext->d_data)
 	);
-	return tmp;
+	return dNext;
 }
 
 

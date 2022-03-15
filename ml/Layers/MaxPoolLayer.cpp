@@ -16,7 +16,8 @@ std::shared_ptr<Tensor> MaxPoolLayer::forward(const std::shared_ptr<Tensor> in) 
 	float beta = 0;
 	cudnnHandle_t* handle = handlers->getCudnnHandle();
 	cudnnGetPooling2dForwardOutputDim(desc, inTensor->desc, &n, &c, &h, &w);
-	outTensor = std::make_unique<Tensor>(std::initializer_list<int>{n, c, h, w});
+	if(outTensor == nullptr)
+		outTensor = std::make_unique<Tensor>(std::initializer_list<int>{n, c, h, w});
 	cudnnPoolingForward(
 		*handle, desc, &alpha, inTensor->desc, inTensor->d_data, &beta, outTensor->desc, outTensor->d_data
 	);
@@ -28,9 +29,10 @@ std::shared_ptr<Tensor> MaxPoolLayer::backward(const std::shared_ptr<Tensor>& dO
 	float alpha = 1;
 	float beta = 0;
 	cudnnHandle_t* handle = handlers->getCudnnHandle();
-	std::shared_ptr<Tensor> tmp = inTensor->create_like();
+	if(dNext == nullptr)
+		dNext = inTensor->create_like();
 	cudnnPoolingBackward(
-		*handle, desc, &alpha, outTensor->desc, outTensor->d_data, dOut->desc, dOut->d_data, inTensor->desc, inTensor->d_data, &beta, tmp->desc, tmp->d_data
+		*handle, desc, &alpha, outTensor->desc, outTensor->d_data, dOut->desc, dOut->d_data, inTensor->desc, inTensor->d_data, &beta, dNext->desc, dNext->d_data
 	);
-	return tmp;
+	return dNext;
 }

@@ -54,8 +54,9 @@ protected:
 	const HandlerSingleton* handlers;
 	T inTensor;
 	T outTensor;
+	std::shared_ptr<Tensor> dNext;
 public:
-	Layer() : handlers(&HandlerSingleton::getInstance()) {};
+	Layer() : handlers(&HandlerSingleton::getInstance()), inTensor(nullptr), outTensor(nullptr), dNext(nullptr) {};
 	virtual ~Layer() {};
 	virtual T forward(const T) = 0;
 	virtual T backward(const T&) = 0;

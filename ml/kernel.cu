@@ -13,6 +13,9 @@
 
 #include "cifar_reader.hpp"
 
+#include <chrono>
+
+
 using namespace constants;
 
 struct VGG {
@@ -94,8 +97,10 @@ int main() {
 	auto dataset = cifar::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 	CrossEntropyLoss loss(true);
 	VGG model;
-	for (int epoch = 0; epoch < 100; epoch++) {
+	
+	for (int epoch = 0; epoch < 10; epoch++) {
 		float epochLoss = 0.0f;
+		auto begin = std::chrono::high_resolution_clock::now();
 		for (int batchInd = 0; batchInd < TRAIN_SIZE / BATCH_SIZE; batchInd++) {
 			model.zeroGrad();
 			std::shared_ptr<Tensor> X = std::make_shared<Tensor>(std::initializer_list<int>{BATCH_SIZE, 3, 32, 32});
@@ -114,13 +119,21 @@ int main() {
 			Y->ToDevice();
 			auto out = model.forward(X);
 			float currLoss = loss.forward(out, Y);
-			epochLoss += currLoss/BATCH_SIZE;
+			epochLoss += currLoss/(TRAIN_SIZE/BATCH_SIZE);
 			auto dL = loss.backward();
+		//std::cout << "LOSS: " << currLoss << std::endl;
+
 			model.backward(dL);
 			model.update(learningRate / BATCH_SIZE);
 		}
+		auto end = std::chrono::high_resolution_clock::now();
+		auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+		printf("Time measured: %.3f seconds.\n", elapsed.count() * 1e-9);
 		std::cout << "LOSS: " << epochLoss << std::endl;
 	}
+	
+	
+	return 0;
 }
 
 
